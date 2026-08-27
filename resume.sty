@@ -1,0 +1,158 @@
+% Shared layout for cv_en.tex / cv_de.tex — one-page, two-column CV style
+% with a colored header banner and a circular photo slot.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{resume}[2026/08/27 resume style]
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[left=1.6cm,right=1.6cm,top=1.2cm,bottom=1.2cm]{geometry}
+\RequirePackage{xcolor}
+\RequirePackage{titlesec}
+\RequirePackage{enumitem}
+\RequirePackage{microtype}
+\RequirePackage{calc}
+\RequirePackage{tikz}
+\RequirePackage{graphicx}
+\RequirePackage{hyperref}
+
+% -- palette -----------------------------------------------------------
+\definecolor{accent}{HTML}{1F4E5F}
+\definecolor{accentlight}{HTML}{4C7A8C}
+\definecolor{muted}{HTML}{555555}
+\definecolor{rule}{HTML}{C9D3D6}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  pdfcreator={LaTeX},
+}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+% -- section headings ---------------------------------------------------
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {}{0em}
+  {}
+  [{\color{rule}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{1.1em}{0.5em}
+
+% -- two-column body geometry -------------------------------------------
+\newlength{\cvsidebarwidth}
+\setlength{\cvsidebarwidth}{5.3cm}
+\newlength{\cvgutter}
+\setlength{\cvgutter}{0.7cm}
+\newlength{\cvmainwidth}
+\setlength{\cvmainwidth}{\textwidth-\cvsidebarwidth-\cvgutter}
+
+\newenvironment{cvsidebar}{%
+  \begin{minipage}[t]{\cvsidebarwidth}
+}{%
+  \end{minipage}%
+}
+\newenvironment{cvmain}{%
+  \begin{minipage}[t]{\cvmainwidth}
+}{%
+  \end{minipage}
+}
+\newcommand{\cvcolgap}{\hspace{\cvgutter}}
+
+% -- photo ----------------------------------------------------------------
+% Drop a square-ish photo.jpg / .jpeg / .png next to content.de.json (repo
+% root) to use a real picture; otherwise a placeholder disc with initials
+% is drawn. Looked up both next to the compiled .tex and one level up, so
+% it's found whether compiling in-place or from a generated output/ folder.
+\newif\ifcvhasphoto
+\newcommand{\cvphotopath}{}
+\newcommand{\cv@checkphoto}[1]{%
+  \ifcvhasphoto\else
+    \IfFileExists{#1}{\cvhasphototrue\renewcommand{\cvphotopath}{#1}}{}%
+  \fi
+}
+\cv@checkphoto{photo.jpg}
+\cv@checkphoto{photo.jpeg}
+\cv@checkphoto{photo.png}
+\cv@checkphoto{../photo.jpg}
+\cv@checkphoto{../photo.jpeg}
+\cv@checkphoto{../photo.png}
+
+% \cvphotobox{initials}
+\newcommand{\cvphotobox}[1]{%
+  \begin{tikzpicture}
+    \ifcvhasphoto
+      \begin{scope}
+        \clip (0,0) circle (1.5cm);
+        \node[inner sep=0] at (0,0) {\includegraphics[width=3cm,height=3cm]{\cvphotopath}};
+      \end{scope}
+      \draw[white,line width=1.2pt] (0,0) circle (1.5cm);
+    \else
+      \fill[accentlight] (0,0) circle (1.5cm);
+      \draw[white,line width=1.2pt] (0,0) circle (1.5cm);
+      \node[white,font=\bfseries\LARGE] at (0,0) {#1};
+    \fi
+  \end{tikzpicture}%
+}
+
+% -- header banner ----------------------------------------------------------
+% \cvbanner{Name}{Tagline}{Initials}{Email}{LinkedIn label}{LinkedIn URL}{GitHub label}{GitHub URL}
+\newlength{\cvbannertextwidth}
+\newlength{\cvbannercontactwidth}
+\setlength{\cvbannercontactwidth}{5.1cm}
+\setlength{\cvbannertextwidth}{\textwidth-3cm-\cvbannercontactwidth-1.6cm-20pt}
+
+\newcommand{\cvbanner}[8]{%
+  \noindent
+  \begin{tikzpicture}
+    \node[fill=accent, rounded corners=5pt, inner sep=10pt,
+          text width=\dimexpr\textwidth-20pt\relax] (banner) {%
+      \color{white}%
+      \begin{minipage}[c]{3cm}
+        \cvphotobox{#3}
+      \end{minipage}%
+      \hspace{0.5cm}%
+      \begin{minipage}[c]{\cvbannertextwidth}
+        {\LARGE\bfseries #1}\\[0.25em]
+        {\small #2}
+      \end{minipage}%
+      \hspace{0.6cm}%
+      \begin{minipage}[c]{\cvbannercontactwidth}\raggedleft\small
+        \href{mailto:#4}{#4}\\[0.2em]
+        \href{https://#6}{#5}\\[0.2em]
+        \href{https://#8}{#7}
+      \end{minipage}%
+    };
+  \end{tikzpicture}\\[0.5em]
+}
+
+% -- entries (education / experience / projects) --------------------------
+% \cventry{Title/Role}{Organization}{Dates}
+\newcommand{\cventry}[3]{%
+  \vspace{0.3em}
+  \noindent
+  \begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
+    \textbf{#1} & {\small\color{muted}#3} \\
+  \end{tabular*}\\[-0.2em]
+  {\small\itshape\color{muted}#2}\\[0.2em]
+}
+
+\newlist{cvitems}{itemize}{1}
+\setlist[cvitems]{
+  label=\textbullet,
+  leftmargin=1.1em,
+  itemsep=3pt,
+  parsep=0pt,
+  topsep=3pt,
+  after=\vspace{0.5em}
+}
+
+% -- skills (stacked style for the narrow sidebar column) -------------------
+% \cvskill{Category}{Items}
+\newcommand{\cvskill}[2]{%
+  \noindent{\small\bfseries\color{accent}#1}\\[0.15em]
+  {\small\color{muted}#2}\\[0.7em]
+}
+
+\endinput

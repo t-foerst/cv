@@ -1,0 +1,85 @@
+{
+  "name": "Thorben Foerst",
+  "initials": "TF",
+  "email": "ThorbenFoerst@proton.me",
+  "linkedin_label": "linkedin.com/in/thorben-foerst-300714403",
+  "linkedin_url": "www.linkedin.com/in/thorben-foerst-300714403",
+  "github_label": "github.com/t-foerst",
+  "github_url": "github.com/t-foerst",
+
+  "tagline": "DevOps & Cloud Engineering --- Umzug nach Kiel geplant",
+
+  "summary": "B.Sc.-Student der IT-Management mit praktischer Erfahrung im Aufbau und Betrieb produktionsnaher Kubernetes-Infrastrukturen -- sowohl beruflich als auch im eigenen Homelab mit Netzwerk, Virtualisierung und Container-Orchestrierung. AWS Certified Solutions Architect -- Associate. Aktuell Bachelorarbeit zum Vergleich von GitOps und klassischem CI/CD mit ArgoCD und GitHub Actions. Ziel: Einstieg als DevOps- / Cloud Engineer mit Kubernetes-Schwerpunkt.",
+
+  "education": {
+    "degree": "B.Sc. IT-Management",
+    "org": "TH Köln -- Campus Gummersbach",
+    "dates": "Okt. 2022 -- voraussichtlich Feb. 2027",
+    "thesis_title": "GitOps vs. Klassisches CI/CD im Kubernetes-Kontext: Eine vergleichende Evaluationsstudie mit ArgoCD und GitHub Actions"
+  },
+
+  "experience": [
+    {
+      "title": "Softwareentwickler (Praktikum)",
+      "org": "Foerst GmbH",
+      "dates": "Okt. 2025 -- März 2026",
+      "bullets": [
+        "Sechsmonatiges Praktikum im Software Engineering; Mitarbeit über den gesamten Stack hinweg sowie Einblicke in On-Premises-Serveradministration und KI-Entwicklung"
+      ]
+    },
+    {
+      "title": "Softwareentwickler",
+      "org": "Foerst GmbH",
+      "dates": "Okt. 2021 -- Sep. 2022",
+      "bullets": [
+        "Ein Jahr Vollzeit-Entwicklung vor Studienbeginn, u. a. in C++ und der hauseigenen Skriptsprache des Unternehmens"
+      ]
+    }
+  ],
+
+  "projects": [
+    {
+      "title": "Praxisprojekt -- Kubernetes-Infrastruktur mit Terraform",
+      "org": "TH Köln, Modul im letzten Semester, Grundlage der Bachelorarbeit",
+      "dates": "2026",
+      "bullets": [
+        "Aufbau und Bereitstellung einer produktionsnahen Kubernetes-Infrastruktur mittels Terraform, End-to-End validiert anhand einer Testapplikation"
+      ]
+    },
+    {
+      "title": "Homelab -- Self-Hosted Kubernetes- & Infrastrukturplattform",
+      "org": "Privates Projekt",
+      "dates": "laufend",
+      "bullets": [
+        "Betrieb von zwei Proxmox-Nodes in einem selbst konzipierten Netzwerk (MikroTik-Router, Managed Switches, eigene VLANs/Subnetze)",
+        "Eigener Kubernetes-Cluster (je ein Master- und Worker-Node pro Proxmox-Host) für Self-Hosted-Services wie Immich, Nextcloud und Vaultwarden",
+        "TrueNAS und Home Assistant als VMs; Monitoring der Umgebung mit Prometheus und Grafana auf einem Raspberry Pi"
+      ]
+    }
+  ],
+
+  "certification": {
+    "title_line1": "AWS Certified Solutions",
+    "title_line2": "Architect -- Associate",
+    "subtitle": "SAA-C03 -- Mai 2026",
+    "link_label": "Credly-Verifizierung",
+    "link_url": "https://www.credly.com/badges/3dfa6ab0-ee52-4084-a66f-a10588dcc4bc/public_url"
+  },
+
+  "languages": [
+    "Deutsch (Muttersprache)",
+    "Englisch (B2)"
+  ],
+
+  "skills": [
+    {"category": "Cloud (AWS)", "items": "EKS, VPC, IAM, EC2, RDS, Secrets Manager u. v. m. (SAA-C03-zertifiziert)"},
+    {"category": "Container & Orchestrierung", "items": "Kubernetes, k3s, Amazon EKS, Docker, Docker Compose, Helm, Kustomize, Traefik Ingress Controller, Longhorn"},
+    {"category": "IaC & CI/CD", "items": "Terraform, GitHub Actions, ArgoCD (GitOps), Ansible, Git"},
+    {"category": "Monitoring & Observability", "items": "Prometheus, Grafana, Uptime Kuma"},
+    {"category": "Netzwerk & Infrastruktur", "items": "MikroTik, Proxmox, TrueNAS, VLANs & Subnetting, WireGuard, NetBird VPN, DHCP-/DNS-/Firewall-Konfiguration, IPv4"},
+    {"category": "Programmierung", "items": "C++, Python -- schnelle Einarbeitung in neue Sprachen und Codebasen"},
+    {"category": "Storage & Backup", "items": "ZFS, 3-2-1-Backup-Strategie, RustFS"},
+    {"category": "Home & IoT", "items": "Home Assistant (Zigbee, Thread, MQTT, Matter), eigenes IoT-WLAN"},
+    {"category": "Hardware", "items": "Aufbau eines Serverracks inkl. selbst zusammengestellter Compute-Nodes, strukturierte LAN-Verkabelung mit Managed Switches"}
+  ]
+}
