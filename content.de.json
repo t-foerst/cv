@@ -66,14 +66,12 @@
   ],
 
   "skills": [
-    {"category": "Cloud (AWS)", "items": "EKS, VPC, IAM, EC2, RDS, Secrets Manager u. v. m. (SAA-C03-zertifiziert)"},
-    {"category": "Container & Orchestrierung", "items": "Kubernetes, k3s, Amazon EKS, Docker, Docker Compose, Helm, Kustomize, Traefik Ingress Controller, Longhorn"},
+    {"category": "Cloud (AWS)", "items": "VPC, IAM, EC2, S3, RDS, EKS, Secrets Manager u. v. m. (SAA-C03-zertifiziert)"},
+    {"category": "Container & Orchestrierung", "items": "Kubernetes, k3s, Amazon EKS, Docker, Docker Compose, Helm"},
     {"category": "IaC & CI/CD", "items": "Terraform, GitHub Actions, ArgoCD (GitOps), Ansible, Git"},
     {"category": "Monitoring & Observability", "items": "Prometheus, Grafana, Uptime Kuma"},
-    {"category": "Netzwerk & Infrastruktur", "items": "MikroTik, Proxmox, TrueNAS, VLANs & Subnetting, WireGuard, NetBird VPN, DHCP-/DNS-/Firewall-Konfiguration, IPv4"},
-    {"category": "Programmierung", "items": "C++, Python -- schnelle Einarbeitung in neue Sprachen und Codebasen"},
-    {"category": "Storage & Backup", "items": "ZFS, 3-2-1-Backup-Strategie, RustFS"},
-    {"category": "Home & IoT", "items": "Home Assistant (Zigbee, Thread, MQTT, Matter), eigenes IoT-WLAN"},
-    {"category": "Hardware", "items": "Aufbau eines Serverracks inkl. selbst zusammengestellter Compute-Nodes, strukturierte LAN-Verkabelung mit Managed Switches"}
+    {"category": "Netzwerk & Infrastruktur", "items": "VLANs & Subnetting, DHCP-/DNS-/Firewall-Konfiguration, Reverse Proxy's(Traefik, Nginx Proxy Manager), Loading Balancing, WireGuard"},
+    {"category": "Programmierung", "items": "Python, HCL, Bash, YAML, JSON, SQL, TeX, C#, C++"},
+    {"category": "Sonstiges", "items": "Linux, GitHub, Proxmox, Hetzner, TrueNAS, LaTeX, Home Assistant, MikroTik, Longhorn, NetBird VPN"}
   ]
 }
