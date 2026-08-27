@@ -1,7 +1,7 @@
 {
   "name": "Thorben Foerst",
   "initials": "TF",
-  "tagline": "DevOps & Cloud Engineer",
+  "tagline": "DevOps & Cloud Enthusiast",
 
   "summary": "IT-Management-Student (B.Sc.) an der TH Köln mit Fokus auf Cloud- und DevOps-Themen. AWS Certified Solutions Architect Associate mit praktischer Erfahrung im Aufbau von Kubernetes-Clustern per Terraform sowie im Umgang mit GitOps-Workflows via ArgoCD.",
 
@@ -14,48 +14,38 @@
 
   "experience": [
     {
-      "title": "Softwareentwickler (Praxissemester)",
-      "org": "Foerst GmbH",
-      "dates": "Okt. 2025 -- März 2026",
-      "bullets": [
-        "Konzeption und Entwicklung interaktiver Übungsmodule im Umfeld von Fahrsimulationssoftware",
-        "Entwicklung eines internen Chatbots auf RAG-Basis (Streamlit, OpenAI API, ChromaDB), der Entwicklern bei der Erstellung neuer Übungsmodule durch kontextbezogenes Wissen unterstützt",
-        "Containerisierung und Deployment von Anwendungen auf On-Premises-Servern mittels Docker und Docker Compose",
-        "Einarbeitung und fachliche Betreuung neuer Mitarbeiter"
-      ]
-    },
-    {
       "title": "Softwareentwickler",
       "org": "Foerst GmbH",
-      "dates": "Okt. 2021 -- Sep. 2022",
+      "dates": "Okt. 2021 – Sep. 2022 & Okt. 2025 – März 2026",
       "bullets": [
-        "Entwicklung interaktiver Übungsmodule im Umfeld von Fahrsimulationssoftware",
-        "Unterstützung bei Auslieferungen von Fahrsimulatoren",
-        "Unterstützung der Produktion"
+        "Konzeption und Entwicklung interaktiver Übungsmodule im Umfeld von Fahrsimulationssoftware",
+        "Entwicklung eines internen Chatbots auf RAG-Basis (Streamlit, OpenAI API, ChromaDB) mit einer Wissensbasis von 330 Seiten, genutzt von der Entwicklungsabteilung zur Unterstützung bei der Erstellung neuer Übungsmodule und laut Rückmeldung aus dem Team zeitsparend im Entwicklungsalltag",
+        "Containerisierung und Deployment von Anwendungen auf On-Premises-Servern mittels Docker und Docker Compose",
+        "Einarbeitung und fachliche Betreuung neuer Mitarbeiter"
       ]
     }
   ],
 
   "projects": [
     {
-      "title": "Praxisprojektarbeit",
-      "org": "TH Köln, Modul im letzten Semester, Grundlage der Bachelorarbeit",
-      "dates": "Apr. 2026 -- Sep. 2026",
-      "bullets": [
-        "Aufbau einer produktionsnahen Kubernetes-Infrastruktur in der AWS Cloud mittels Terraform, inkl. Bereitstellung eines Managed Kubernetes-Clusters (Amazon EKS)",
-        "Containerisierung und Deployment einer Testapplikation mit Datenbankanbindung (Amazon RDS) zur End-to-End-Validierung der Infrastruktur",
-        "Sicheres Secret-Management der DB-Zugangsdaten über AWS Secrets Manager sowie Bereitstellung via AWS Load Balancer Controller (LBC)"
-      ]
-    },
-    {
       "title": "Homelab",
       "org": "Privates Projekt",
       "dates": "Jun. 2025 -- laufend",
       "bullets": [
         "Aufbau eines selbst konzipierten Netzwerks mit eigenem Routing und VLAN-Segmentierung als Basis der gesamten Infrastruktur",
-        "Virtualisierungsebene auf zwei Proxmox-Nodes; darauf Kubernetes-Cluster (k3s) mit mehreren Master-/Worker-Nodes zur Ausfallsicherheit einzelner Nodes",
-        "GitOps-Deployment via ArgoCD, Longhorn-Storage mit automatisierten S3-Backups für Services wie Nextcloud, Immich und Vaultwarden",
+        "Virtualisierungsebene auf zwei Proxmox-Nodes mit 6 VMs; darauf Kubernetes-Cluster (k3s) mit 2 Master- und 2 Worker-Nodes zur Ausfallsicherheit einzelner Nodes",
+        "GitOps-Deployment via ArgoCD für 11 produktiv genutzte Services (u. a. Nextcloud, Immich, Vaultwarden), Longhorn-Storage mit automatisierten S3-Backups",
         "Infrastructure-as-Code mittels Terraform sowie Monitoring mit Prometheus und Grafana"
+      ]
+    },
+    {
+      "title": "Praxisprojektarbeit",
+      "org": "TH Köln, Modul im letzten Semester, Grundlage der Bachelorarbeit",
+      "dates": "Apr. 2026 -- Aug. 2026",
+      "bullets": [
+        "Aufbau einer produktionsnahen Kubernetes-Infrastruktur in der AWS Cloud mittels Terraform, inkl. Bereitstellung eines Managed Kubernetes-Clusters (Amazon EKS)",
+        "Containerisierung und Deployment einer Testapplikation mit Datenbankanbindung (Amazon RDS) zur End-to-End-Validierung der Infrastruktur",
+        "Sicheres Secret-Management der DB-Zugangsdaten über AWS Secrets Manager sowie Bereitstellung via AWS Load Balancer Controller (LBC)"
       ]
     }
   ],
@@ -63,14 +53,14 @@
   "certification": {
     "title_line1": "AWS Certified Solutions",
     "title_line2": "Architect -- Associate",
-    "subtitle": "SAA-C03 -- Mai 2026",
+    "subtitle": "SAA-C03 -- Expires: May 06, 2029",
     "link_label": "Credly-Verifizierung",
     "link_url": "https://www.credly.com/badges/3dfa6ab0-ee52-4084-a66f-a10588dcc4bc/public_url"
   },
 
   "languages": [
     "Deutsch (Muttersprache)",
-    "Englisch (B2)"
+    "Englisch (C1)"
   ],
 
   "skills": [
@@ -78,8 +68,8 @@
     {"category": "Container & Orchestrierung", "items": "Kubernetes, k3s, Amazon EKS, Docker, Docker Compose, Helm"},
     {"category": "IaC & CI/CD", "items": "Terraform, GitHub Actions, ArgoCD (GitOps), Ansible, Git"},
     {"category": "Monitoring & Observability", "items": "Prometheus, Grafana, Uptime Kuma"},
-    {"category": "Netzwerk & Infrastruktur", "items": "VLANs & Subnetting, DHCP-/DNS-/Firewall-Konfiguration, Reverse Proxys (Traefik, Nginx Proxy Manager), Load Balancing, WireGuard"},
-    {"category": "Programmierung", "items": "Python, HCL, Bash, YAML, JSON, SQL, TeX, C#, C++"},
-    {"category": "Sonstiges", "items": "Linux, RAG, LangChain, Chroma, Proxmox, Hetzner, TrueNAS, GitHub, LaTeX, MikroTik, Longhorn, NetBird VPN"}
+    {"category": "Netzwerk & Infrastruktur", "items": "VLANs & Subnetting, DHCP-/DNS-/Firewall-Konfiguration, Linux, TrueNAS, Reverse Proxys (Traefik, Nginx Proxy Manager), Load Balancing, WireGuard"},
+    {"category": "Programmierung", "items": "Python, HCL, Bash, YAML, JSON, SQL, C#, C++"},
+    {"category": "AI", "items": "RAG, LangChain, Chroma, OpenAI API"}
   ]
 }
