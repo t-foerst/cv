@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 """One-shot CV build: translate (if stale) -> render .tex -> compile PDFs.
 
-- content.de.json (repo root)  -- the only file you edit
-- output/content.en.json       -- auto-refreshed via DeepL when content.de.json
-                                   is newer (needs DEEPL_API_KEY in .env; skipped,
-                                   not fatal, if missing/offline)
+- content.de.json (repo root)   -- the file you edit for CV content
+- personal.json (repo root)     -- your real contact/personal details,
+                                    gitignored (copy from personal.json.example)
+- personal.public.json          -- redacted fallback used when personal.json
+                                    isn't present (e.g. in CI, since it's
+                                    gitignored) -- committed, safe to publish
+- output/content.en.json        -- auto-refreshed via DeepL when content.de.json
+                                    is newer (needs DEEPL_API_KEY in .env; skipped,
+                                    not fatal, if missing/offline)
 - output/cv_de.tex, cv_en.tex, cv_de.pdf, cv_en.pdf -- generated
 
 Usage: scripts/generate.py [de] [en]   (defaults to both)
 """
 import json
+import os
 import platform
 import re
 import shutil
@@ -22,6 +28,8 @@ from translate import refresh_translation  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "output"
+PERSONAL_PATH = ROOT / "personal.json"
+PERSONAL_PUBLIC_PATH = ROOT / "personal.public.json"
 
 CONTENT_PATH = {
     "de": ROOT / "content.de.json",
@@ -42,6 +50,10 @@ LABELS = {
         "thesis_label": "Bachelorarbeit",
         "quote_open": "„",
         "quote_close": "“",
+        "phone_label": "Tel.",
+        "location_label": "Wohnort",
+        "born_label": "Geboren",
+        "born_in": "in",
     },
     "en": {
         "babel": "english",
@@ -56,6 +68,10 @@ LABELS = {
         "thesis_label": "Bachelor's thesis",
         "quote_open": '"',
         "quote_close": '"',
+        "phone_label": "Phone",
+        "location_label": "Location",
+        "born_label": "Born",
+        "born_in": "in",
     },
 }
 
@@ -96,9 +112,45 @@ def cventry(title, org, dates):
     return f"\\cventry{{{esc(title)}}}{{{esc(org)}}}{{{esc(dates)}}}"
 
 
-def render(lang, content):
+def info_block(lang, personal):
+    """Two-column contact/personal list. Fields left empty in personal.json
+    (e.g. in the redacted personal.public.json) are skipped entirely."""
+    L = LABELS[lang]
+    p = personal
+    lines = []
+    if p.get("phone"):
+        lines.append(f"{L['phone_label']}: {esc(p['phone'])}")
+    if p.get("email"):
+        lines.append(f"\\href{{mailto:{p['email']}}}{{{p['email']}}}")
+    if p.get("linkedin_url"):
+        lines.append(f"\\href{{https://{p['linkedin_url']}}}{{{p['linkedin_label']}}}")
+    if p.get("github_url"):
+        lines.append(f"\\href{{https://{p['github_url']}}}{{{p['github_label']}}}")
+    if p.get("location"):
+        lines.append(f"{L['location_label']}: {esc(p['location'])}")
+    if p.get("birth_date"):
+        born = f"{L['born_label']}: {esc(p['birth_date'])}"
+        if p.get("birth_place"):
+            born += f" {L['born_in']} {esc(p['birth_place'])}"
+        lines.append(born)
+
+    half = (len(lines) + 1) // 2
+    col_a = "\\\\\n        ".join(lines[:half])
+    col_b = "\\\\\n        ".join(lines[half:])
+    return (
+        f"\\begin{{minipage}}[t]{{0.5\\cvbannertextwidth}}\n"
+        f"        {col_a}\n"
+        f"      \\end{{minipage}}%\n"
+        f"      \\begin{{minipage}}[t]{{0.5\\cvbannertextwidth}}\n"
+        f"        {col_b}\n"
+        f"      \\end{{minipage}}"
+    )
+
+
+def render(lang, content, personal, is_public):
     L = LABELS[lang]
     c = content
+    resume_pkg = "\\usepackage[public]{resume}" if is_public else "\\usepackage{resume}"
 
     skills = "\n".join(
         f"\\cvskill{{{esc(s['category'])}}}{{{esc_breakable(s['items'])}}}"
@@ -121,7 +173,7 @@ def render(lang, content):
 
     tex = f"""\\documentclass[10pt,a4paper]{{article}}
 \\usepackage[{L['babel']}]{{babel}}
-\\usepackage{{resume}}
+{resume_pkg}
 
 \\hypersetup{{pdftitle={{{c['name']} - {L['doc_title']}}}, pdfauthor={{{c['name']}}}}}
 
@@ -131,9 +183,7 @@ def render(lang, content):
   {{{esc(c['name'])}}}
   {{{esc(c['tagline'])}}}
   {{{esc(c['initials'])}}}
-  {{{c['email']}}}
-  {{{c['linkedin_label']}}}{{{c['linkedin_url']}}}
-  {{{c['github_label']}}}{{{c['github_url']}}}
+  {{{info_block(lang, personal)}}}
 
 \\begin{{cvsidebar}}
 
@@ -188,7 +238,11 @@ def compile_pdf(lang):
         return False
     try:
         result = subprocess.run(
-            ["latexmk", "-pdf", "-interaction=nonstopmode", "-halt-on-error", tex_name],
+            # -g: force a rebuild even if latexmk's content-hash check thinks
+            # nothing changed -- it can't see photo.jpg/png swaps, since the
+            # photo path is only resolved inside resume.sty at compile time,
+            # not in the (textually unchanged) .tex source.
+            ["latexmk", "-pdf", "-g", "-interaction=nonstopmode", "-halt-on-error", tex_name],
             cwd=OUTPUT_DIR,
             capture_output=True,
             text=True,
@@ -226,6 +280,20 @@ def open_pdf(lang):
 
 def main():
     langs = sys.argv[1:] or ["de", "en"]
+
+    is_public = not PERSONAL_PATH.exists()
+    if not is_public:
+        personal = json.loads(PERSONAL_PATH.read_text(encoding="utf-8"))
+    elif PERSONAL_PUBLIC_PATH.exists():
+        print(f"{PERSONAL_PATH} not found -- using {PERSONAL_PUBLIC_PATH} "
+              "(redacted, public-safe contact info, no photo).", file=sys.stderr)
+        personal = json.loads(PERSONAL_PUBLIC_PATH.read_text(encoding="utf-8"))
+    else:
+        print(f"Neither {PERSONAL_PATH} nor {PERSONAL_PUBLIC_PATH} found -- "
+              "copy personal.json.example to personal.json and fill in your "
+              "contact details.", file=sys.stderr)
+        sys.exit(1)
+
     OUTPUT_DIR.mkdir(exist_ok=True)
     shutil.copyfile(ROOT / "resume.sty", OUTPUT_DIR / "resume.sty")
 
@@ -240,14 +308,14 @@ def main():
                   file=sys.stderr)
             continue
         content = json.loads(path.read_text(encoding="utf-8"))
-        tex = render(lang, content)
+        tex = render(lang, content, personal, is_public)
         out = OUTPUT_DIR / f"cv_{lang}.tex"
         out.write_text(tex, encoding="utf-8")
         print(f"wrote {out}")
 
     ok = {lang: compile_pdf(lang) for lang in langs}
 
-    if "de" in langs and ok.get("de"):
+    if "de" in langs and ok.get("de") and not os.environ.get("CI"):
         open_pdf("de")
 
 

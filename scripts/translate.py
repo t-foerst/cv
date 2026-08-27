@@ -25,11 +25,6 @@ OUTPUT_DIR = ROOT / "output"
 NON_TRANSLATABLE = {
     "name",
     "initials",
-    "email",
-    "linkedin_label",
-    "linkedin_url",
-    "github_label",
-    "github_url",
     "education.org",
     "certification.title_line1",
     "certification.title_line2",

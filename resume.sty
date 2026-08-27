@@ -3,6 +3,15 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{resume}[2026/08/27 resume style]
 
+% \usepackage[public]{resume}: force the initials placeholder instead of a
+% real photo, regardless of whether a photo file happens to exist on disk.
+% Used for the redacted/CI build so a real photo can never leak in even if
+% one is present locally during testing.
+\newif\ifcvpublic
+\cvpublicfalse
+\DeclareOption{public}{\cvpublictrue}
+\ProcessOptions\relax
+
 \RequirePackage[T1]{fontenc}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[left=1.6cm,right=1.6cm,top=1.2cm,bottom=1.2cm]{geometry}
@@ -72,12 +81,15 @@
     \IfFileExists{#1}{\cvhasphototrue\renewcommand{\cvphotopath}{#1}}{}%
   \fi
 }
-\cv@checkphoto{photo.jpg}
-\cv@checkphoto{photo.jpeg}
-\cv@checkphoto{photo.png}
-\cv@checkphoto{../photo.jpg}
-\cv@checkphoto{../photo.jpeg}
-\cv@checkphoto{../photo.png}
+\ifcvpublic
+\else
+  \cv@checkphoto{photo.jpg}
+  \cv@checkphoto{photo.jpeg}
+  \cv@checkphoto{photo.png}
+  \cv@checkphoto{../photo.jpg}
+  \cv@checkphoto{../photo.jpeg}
+  \cv@checkphoto{../photo.png}
+\fi
 
 % \cvphotobox{initials}
 \newcommand{\cvphotobox}[1]{%
@@ -85,7 +97,14 @@
     \ifcvhasphoto
       \begin{scope}
         \clip (0,0) circle (1.5cm);
-        \node[inner sep=0] at (0,0) {\includegraphics[width=3cm,height=3cm]{\cvphotopath}};
+        % "Cover" crop: scale by whichever side keeps aspect ratio while
+        % filling the 3cm square (no stretching), let the circle clip the rest.
+        \sbox0{\includegraphics{\cvphotopath}}%
+        \ifdim\wd0>\ht0
+          \node[inner sep=0] at (0,0) {\includegraphics[height=3cm]{\cvphotopath}};
+        \else
+          \node[inner sep=0] at (0,0) {\includegraphics[width=3cm]{\cvphotopath}};
+        \fi
       \end{scope}
       \draw[white,line width=1.2pt] (0,0) circle (1.5cm);
     \else
@@ -97,31 +116,28 @@
 }
 
 % -- header banner ----------------------------------------------------------
-% \cvbanner{Name}{Tagline}{Initials}{Email}{LinkedIn label}{LinkedIn URL}{GitHub label}{GitHub URL}
+% \cvbanner{Name}{Tagline}{Initials}{InfoBlock}
+% InfoBlock is pre-formatted LaTeX (built by scripts/generate.py from
+% personal.json / personal.public.json) -- a two-column list of
+% contact/personal details, already laid out using \cvbannertextwidth.
 \newlength{\cvbannertextwidth}
-\newlength{\cvbannercontactwidth}
-\setlength{\cvbannercontactwidth}{5.1cm}
-\setlength{\cvbannertextwidth}{\textwidth-3cm-\cvbannercontactwidth-1.6cm-20pt}
+\setlength{\cvbannertextwidth}{\textwidth-3cm-0.6cm-20pt}
 
-\newcommand{\cvbanner}[8]{%
+\newcommand{\cvbanner}[4]{%
   \noindent
   \begin{tikzpicture}
     \node[fill=accent, rounded corners=5pt, inner sep=10pt,
           text width=\dimexpr\textwidth-20pt\relax] (banner) {%
       \color{white}%
+      \hypersetup{urlcolor=white, linkcolor=white}%
       \begin{minipage}[c]{3cm}
         \cvphotobox{#3}
       \end{minipage}%
-      \hspace{0.5cm}%
-      \begin{minipage}[c]{\cvbannertextwidth}
-        {\LARGE\bfseries #1}\\[0.25em]
-        {\small #2}
-      \end{minipage}%
       \hspace{0.6cm}%
-      \begin{minipage}[c]{\cvbannercontactwidth}\raggedleft\small
-        \href{mailto:#4}{#4}\\[0.2em]
-        \href{https://#6}{#5}\\[0.2em]
-        \href{https://#8}{#7}
+      \begin{minipage}[c]{\cvbannertextwidth}
+        {\LARGE\bfseries #1}\\[0.2em]
+        {\small #2}\\[0.35em]
+        {\footnotesize #4}
       \end{minipage}%
     };
   \end{tikzpicture}\\[0.5em]

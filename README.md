@@ -2,7 +2,25 @@
 
 My CV, version-controlled — English and German.
 
-- `content.de.json` — **the only file you edit.** All CV content, German.
+<p align="center">
+  <img src="preview/cv_de.png" width="49%" alt="CV preview (German)">
+  <img src="preview/cv_en.png" width="49%" alt="CV preview (English)">
+</p>
+
+`preview/*.png` is auto-updated on every push to `main` by
+[`.github/workflows/cv-preview.yml`](.github/workflows/cv-preview.yml),
+built from a redacted contact-info fallback (see `personal.public.json`
+below) since the real `personal.json` is gitignored and unavailable in CI.
+
+- `content.de.json` — **the file you edit** for CV content (summary,
+  education, experience, projects, skills, ...). German.
+- `personal.json` — your real contact/personal details shown in the header
+  (phone, email, LinkedIn, GitHub, location, birth date & place). Copy from
+  `personal.json.example` and fill in; gitignored, never committed.
+- `personal.public.json` — redacted fallback (just email/LinkedIn/GitHub,
+  everything else blank) used automatically when `personal.json` isn't
+  present. Committed — this is what CI and anyone cloning the repo sees.
+  Edit it if you want more/less shown in the public preview.
 - `photo.jpg` / `.jpeg` / `.png` — optional, square-ish photo (see below).
 - `resume.sty` — shared layout.
 - `.env` — `DEEPL_API_KEY=...` (create it yourself; gitignored, never committed).
@@ -11,11 +29,20 @@ My CV, version-controlled — English and German.
   files, and compiles both PDFs.
 - `output/` — everything generated: `content.en.json`, both `.tex` files,
   both `.pdf` files. Gitignored, safe to delete anytime.
+- `preview/` — PNG snapshots of both PDFs, committed, shown at the top of
+  this README. Refreshed by CI on every push to `main`.
+
+## Setup
+
+```sh
+cp personal.json.example personal.json   # then fill in your details
+```
 
 ## Edit
 
-Change `content.de.json` only — it's the single source of truth. English is
-kept in sync automatically on the next build.
+Change `content.de.json` for CV content. English is kept in sync
+automatically on the next build. `personal.json` doesn't need touching once
+set up, unless your contact details change.
 
 ## Build
 
@@ -40,4 +67,14 @@ To review the machine translation before trusting it, check
 Drop a roughly square `photo.jpg` (or `.jpeg` / `.png`) next to
 `content.de.json` — it's automatically cropped into the circular photo slot
 on next build. Without a file present, a placeholder with your initials is
-drawn instead. Photo files are gitignored, never published.
+drawn instead. Photo files are gitignored, never published — the CI preview
+always shows the initials placeholder, never a real photo.
+
+## CI preview
+
+On every push to `main`, `.github/workflows/cv-preview.yml` builds the CV
+using `personal.public.json` (no `personal.json` or photo in that checkout),
+renders both PDFs to PNG, and commits them to `preview/`. That's the image
+shown at the top of this README. To also get the English preview refreshed,
+add a repo secret `DEEPL_API_KEY`; without it, the English build is skipped
+in CI and the previous `preview/cv_en.png` is left as-is.

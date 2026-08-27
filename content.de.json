@@ -1,13 +1,7 @@
 {
   "name": "Thorben Foerst",
   "initials": "TF",
-  "email": "ThorbenFoerst@proton.me",
-  "linkedin_label": "linkedin.com/in/thorben-foerst-300714403",
-  "linkedin_url": "www.linkedin.com/in/thorben-foerst-300714403",
-  "github_label": "github.com/t-foerst",
-  "github_url": "github.com/t-foerst",
-
-  "tagline": "DevOps & Cloud Engineering --- Umzug nach Kiel geplant",
+  "tagline": "DevOps & Cloud Engineering",
 
   "summary": "B.Sc.-Student der IT-Management mit praktischer Erfahrung im Aufbau und Betrieb produktionsnaher Kubernetes-Infrastrukturen -- sowohl beruflich als auch im eigenen Homelab mit Netzwerk, Virtualisierung und Container-Orchestrierung. AWS Certified Solutions Architect -- Associate. Aktuell Bachelorarbeit zum Vergleich von GitOps und klassischem CI/CD mit ArgoCD und GitHub Actions. Ziel: Einstieg als DevOps- / Cloud Engineer mit Kubernetes-Schwerpunkt.",
 

@@ -1,0 +1,11 @@
+{
+  "phone": "+49 151 00000000",
+  "email": "you@example.com",
+  "linkedin_label": "linkedin.com/in/your-handle",
+  "linkedin_url": "www.linkedin.com/in/your-handle",
+  "github_label": "github.com/your-handle",
+  "github_url": "github.com/your-handle",
+  "location": "City, Country",
+  "birth_date": "DD.MM.YYYY",
+  "birth_place": "City"
+}

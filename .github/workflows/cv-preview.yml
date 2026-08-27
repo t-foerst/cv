@@ -1,0 +1,52 @@
+name: Update CV preview
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install TeX Live and poppler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base texlive-latex-extra texlive-fonts-recommended \
+            texlive-lang-german latexmk poppler-utils
+
+      # personal.json is gitignored (it holds phone/birth date/etc.) and
+      # therefore doesn't exist in this checkout. scripts/generate.py
+      # automatically falls back to the redacted personal.public.json.
+      - name: Build CV
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          CI: "true"
+        run: python3 scripts/generate.py
+
+      - name: Render preview images
+        run: |
+          mkdir -p preview
+          pdftoppm -png -r 150 -f 1 -l 1 output/cv_de.pdf preview/cv_de
+          mv preview/cv_de-1.png preview/cv_de.png
+          if [ -f output/cv_en.pdf ]; then
+            pdftoppm -png -r 150 -f 1 -l 1 output/cv_en.pdf preview/cv_en
+            mv preview/cv_en-1.png preview/cv_en.png
+          fi
+
+      - name: Commit preview images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add preview/
+          git diff --cached --quiet && echo "No preview changes." || git commit -m "chore: update CV preview"
+          git push

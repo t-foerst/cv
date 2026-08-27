@@ -1,5 +1,7 @@
 output/
 .env
+personal.json
 *.png
+!preview/*.png
 __pycache__/
 *.pyc
