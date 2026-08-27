@@ -18,7 +18,10 @@
 \RequirePackage{xcolor}
 \RequirePackage{titlesec}
 \RequirePackage{enumitem}
-\RequirePackage{microtype}
+% expansion=false: font expansion needs scalable Type1/OTF fonts (e.g.
+% cm-super), which minimal TeX Live installs (like CI) may lack. Protrusion
+% alone (still enabled) needs no such fonts and covers most of the benefit.
+\RequirePackage[expansion=false]{microtype}
 \RequirePackage{calc}
 \RequirePackage{tikz}
 \RequirePackage{graphicx}
