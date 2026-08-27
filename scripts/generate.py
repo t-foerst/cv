@@ -147,10 +147,11 @@ def info_block(lang, personal):
     )
 
 
-def render(lang, content, personal, is_public):
+def render(lang, content, personal, is_public, size_opt=None):
     L = LABELS[lang]
     c = content
-    resume_pkg = "\\usepackage[public]{resume}" if is_public else "\\usepackage{resume}"
+    opts = (["public"] if is_public else []) + ([size_opt] if size_opt else [])
+    resume_pkg = f"\\usepackage[{','.join(opts)}]{{resume}}" if opts else "\\usepackage{resume}"
 
     skills = "\n".join(
         f"\\cvskill{{{esc(s['category'])}}}{{{esc_breakable(s['items'])}}}"
@@ -187,6 +188,9 @@ def render(lang, content, personal, is_public):
 
 \\begin{{cvsidebar}}
 
+\\section*{{{L['section_summary']}}}
+{{\\small {esc(c['summary'])}}}
+
 \\section*{{{L['section_skills']}}}
 {skills}
 
@@ -201,9 +205,6 @@ def render(lang, content, personal, is_public):
 \\end{{cvsidebar}}%
 \\cvcolgap%
 \\begin{{cvmain}}
-
-\\section*{{{L['section_summary']}}}
-{esc(c['summary'])}
 
 \\section*{{{L['section_education']}}}
 {cventry(c['education']['degree'], c['education']['org'], c['education']['dates'])}
@@ -222,6 +223,21 @@ def render(lang, content, personal, is_public):
 \\end{{document}}
 """
     return tex
+
+
+def pdf_page_count(pdf_path):
+    try:
+        result = subprocess.run(
+            ["pdfinfo", str(pdf_path)], capture_output=True, text=True
+        )
+    except FileNotFoundError:
+        return None
+    if result.returncode != 0:
+        return None
+    for line in result.stdout.splitlines():
+        if line.startswith("Pages:"):
+            return int(line.split(":")[1].strip())
+    return None
 
 
 def translation_is_stale():
@@ -259,6 +275,36 @@ def compile_pdf(lang):
         print(f"latexmk failed for {lang} -- see output/cv_{lang}.log", file=sys.stderr)
         return False
     print(f"compiled output/cv_{lang}.pdf")
+    return True
+
+
+# Font-size fallback ladder: try normal size first, then shrink in fine
+# steps as a last resort to keep the CV on one page. None = resume.sty's
+# default (10pt).
+SIZE_STEPS = [None, "size9-5", "size9", "size8-5", "size8"]
+
+
+def build_lang(lang, content, personal, is_public):
+    """Write + compile, shrinking the font size until the CV fits one page."""
+    out = OUTPUT_DIR / f"cv_{lang}.tex"
+    pdf = OUTPUT_DIR / f"cv_{lang}.pdf"
+    pages = None
+    for size_opt in SIZE_STEPS:
+        tex = render(lang, content, personal, is_public, size_opt)
+        out.write_text(tex, encoding="utf-8")
+        print(f"wrote {out}" + (f" [{size_opt}]" if size_opt else ""))
+        if not compile_pdf(lang):
+            return False
+        pages = pdf_page_count(pdf)
+        if pages is None:
+            print(f"{lang}: couldn't determine page count (pdfinfo missing?) "
+                  "-- keeping this build as-is.", file=sys.stderr)
+            return True
+        if pages == 1:
+            return True
+    print(f"{lang}: still {pages} pages at the smallest size ({SIZE_STEPS[-1]}) "
+          "-- trim content in content.de.json to get back to one page.",
+          file=sys.stderr)
     return True
 
 
@@ -301,6 +347,7 @@ def main():
         refresh_translation()
 
     written = []
+    failed = []
     for lang in langs:
         path = CONTENT_PATH[lang]
         if not path.exists():
@@ -309,13 +356,10 @@ def main():
                   file=sys.stderr)
             continue
         content = json.loads(path.read_text(encoding="utf-8"))
-        tex = render(lang, content, personal, is_public)
-        out = OUTPUT_DIR / f"cv_{lang}.tex"
-        out.write_text(tex, encoding="utf-8")
-        print(f"wrote {out}")
         written.append(lang)
+        if not build_lang(lang, content, personal, is_public):
+            failed.append(lang)
 
-    failed = [lang for lang in written if not compile_pdf(lang)]
     if failed:
         print(f"Aborting: PDF compilation failed for: {', '.join(failed)}",
               file=sys.stderr)

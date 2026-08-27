@@ -3,13 +3,28 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{resume}[2026/08/27 resume style]
 
+\RequirePackage{calc}
+
+% -- package options ----------------------------------------------------
 % \usepackage[public]{resume}: force the initials placeholder instead of a
 % real photo, regardless of whether a photo file happens to exist on disk.
 % Used for the redacted/CI build so a real photo can never leak in even if
 % one is present locally during testing.
+%
+% \usepackage[size9]{resume} (size10/size9-5/size9/size8-5/size8): shrink
+% body text -- and, since almost all spacing in this file is em-based,
+% proportionally everything else too. scripts/generate.py steps through
+% these as a last-resort fallback to keep the CV on one page.
 \newif\ifcvpublic
 \cvpublicfalse
+\newlength{\cv@basept}
+\setlength{\cv@basept}{10pt}
 \DeclareOption{public}{\cvpublictrue}
+\DeclareOption{size10}{\setlength{\cv@basept}{10pt}}
+\DeclareOption{size9-5}{\setlength{\cv@basept}{9.5pt}}
+\DeclareOption{size9}{\setlength{\cv@basept}{9pt}}
+\DeclareOption{size8-5}{\setlength{\cv@basept}{8.5pt}}
+\DeclareOption{size8}{\setlength{\cv@basept}{8pt}}
 \ProcessOptions\relax
 
 \RequirePackage[T1]{fontenc}
@@ -22,10 +37,30 @@
 % cm-super), which minimal TeX Live installs (like CI) may lack. Protrusion
 % alone (still enabled) needs no such fonts and covers most of the benefit.
 \RequirePackage[expansion=false]{microtype}
-\RequirePackage{calc}
 \RequirePackage{tikz}
 \RequirePackage{graphicx}
 \RequirePackage{hyperref}
+
+% -- font-size scale ------------------------------------------------------
+% Redefine the size commands relative to \cv@basept instead of the document
+% class's fixed 10/11/12pt steps, driven by the size* options above.
+\newlength{\cv@sz}
+\newlength{\cv@bl}
+\newcommand{\cv@fontsize}[2]{%
+  \setlength{\cv@sz}{#1\cv@basept}%
+  \setlength{\cv@bl}{#2\cv@basept}%
+  \fontsize{\cv@sz}{\cv@bl}\selectfont
+}
+\renewcommand{\scriptsize}{\cv@fontsize{0.7}{0.84}}
+\renewcommand{\footnotesize}{\cv@fontsize{0.8}{0.96}}
+\renewcommand{\small}{\cv@fontsize{0.9}{1.08}}
+\renewcommand{\normalsize}{\cv@fontsize{1.0}{1.2}}
+\renewcommand{\large}{\cv@fontsize{1.1}{1.32}}
+\renewcommand{\Large}{\cv@fontsize{1.3}{1.56}}
+\renewcommand{\LARGE}{\cv@fontsize{1.5}{1.8}}
+\renewcommand{\huge}{\cv@fontsize{1.8}{2.16}}
+\renewcommand{\Huge}{\cv@fontsize{2.0}{2.4}}
+\AtBeginDocument{\normalsize}
 
 % -- palette -----------------------------------------------------------
 \definecolor{accent}{HTML}{1F4E5F}
@@ -45,12 +80,16 @@
 \renewcommand{\familydefault}{\sfdefault}
 
 % -- section headings ---------------------------------------------------
+% Explicit \vspace in the before-code (rather than relying on titlesec's
+% \titlespacing "before" value, which is internally an \addvspace and can
+% collapse to near-zero straight after plain paragraph text) guarantees a
+% real minimum gap above every section heading, no matter what precedes it.
 \titleformat{\section}
   {\large\bfseries\color{accent}}
   {}{0em}
-  {}
+  {\vspace{0.9em}}
   [{\color{rule}\titlerule[0.8pt]}]
-\titlespacing*{\section}{0pt}{1.1em}{0.5em}
+\titlespacing*{\section}{0pt}{0pt}{0.5em}
 
 % -- two-column body geometry -------------------------------------------
 \newlength{\cvsidebarwidth}
@@ -161,9 +200,9 @@
 \setlist[cvitems]{
   label=\textbullet,
   leftmargin=1.1em,
-  itemsep=3pt,
+  itemsep=0.25em,
   parsep=0pt,
-  topsep=3pt,
+  topsep=0.25em,
   after=\vspace{0.5em}
 }
 
