@@ -147,11 +147,10 @@ def info_block(lang, personal):
     )
 
 
-def render(lang, content, personal, is_public, size_opt=None):
+def render(lang, content, personal, size_opt=None):
     L = LABELS[lang]
     c = content
-    opts = (["public"] if is_public else []) + ([size_opt] if size_opt else [])
-    resume_pkg = f"\\usepackage[{','.join(opts)}]{{resume}}" if opts else "\\usepackage{resume}"
+    resume_pkg = f"\\usepackage[{size_opt}]{{resume}}" if size_opt else "\\usepackage{resume}"
 
     skills = "\n".join(
         f"\\cvskill{{{esc(s['category'])}}}{{{esc_breakable(s['items'])}}}"
@@ -183,7 +182,6 @@ def render(lang, content, personal, is_public, size_opt=None):
 \\cvbanner
   {{{esc(c['name'])}}}
   {{{esc(c['tagline'])}}}
-  {{{esc(c['initials'])}}}
   {{{info_block(lang, personal)}}}
 
 \\begin{{cvsidebar}}
@@ -255,9 +253,8 @@ def compile_pdf(lang):
     try:
         result = subprocess.run(
             # -g: force a rebuild even if latexmk's content-hash check thinks
-            # nothing changed -- it can't see photo.jpg/png swaps, since the
-            # photo path is only resolved inside resume.sty at compile time,
-            # not in the (textually unchanged) .tex source.
+            # nothing changed -- resume.sty is copied in fresh each run and
+            # its own edits don't always show up as a "changed" dependency.
             ["latexmk", "-pdf", "-g", "-interaction=nonstopmode", "-halt-on-error", tex_name],
             cwd=OUTPUT_DIR,
             capture_output=True,
@@ -284,13 +281,13 @@ def compile_pdf(lang):
 SIZE_STEPS = [None, "size9-5", "size9", "size8-5", "size8"]
 
 
-def build_lang(lang, content, personal, is_public):
+def build_lang(lang, content, personal):
     """Write + compile, shrinking the font size until the CV fits one page."""
     out = OUTPUT_DIR / f"cv_{lang}.tex"
     pdf = OUTPUT_DIR / f"cv_{lang}.pdf"
     pages = None
     for size_opt in SIZE_STEPS:
-        tex = render(lang, content, personal, is_public, size_opt)
+        tex = render(lang, content, personal, size_opt)
         out.write_text(tex, encoding="utf-8")
         print(f"wrote {out}" + (f" [{size_opt}]" if size_opt else ""))
         if not compile_pdf(lang):
@@ -332,7 +329,7 @@ def main():
         personal = json.loads(PERSONAL_PATH.read_text(encoding="utf-8"))
     elif PERSONAL_PUBLIC_PATH.exists():
         print(f"{PERSONAL_PATH} not found -- using {PERSONAL_PUBLIC_PATH} "
-              "(redacted, public-safe contact info, no photo).", file=sys.stderr)
+              "(redacted, public-safe contact info).", file=sys.stderr)
         personal = json.loads(PERSONAL_PUBLIC_PATH.read_text(encoding="utf-8"))
     else:
         print(f"Neither {PERSONAL_PATH} nor {PERSONAL_PUBLIC_PATH} found -- "
@@ -357,7 +354,7 @@ def main():
             continue
         content = json.loads(path.read_text(encoding="utf-8"))
         written.append(lang)
-        if not build_lang(lang, content, personal, is_public):
+        if not build_lang(lang, content, personal):
             failed.append(lang)
 
     if failed:

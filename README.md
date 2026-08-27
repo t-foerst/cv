@@ -22,11 +22,3 @@ Translates (if `content.de.json` changed since the last translation, via
 DeepL — needs `DEEPL_API_KEY` in `.env`; skipped, not fatal, if missing or
 offline, reusing the previous `output/content.en.json`), renders both
 `.tex` files, and compiles `output/cv_de.pdf` / `output/cv_en.pdf`.
-
-
-## Photo
-
-Drop a roughly square `photo.jpg` (or `.jpeg` / `.png`) next to
-`content.de.json` — it's automatically cropped into the circular photo slot
-on next build. Without a file present, a placeholder with your initials is
-drawn instead.

@@ -1,25 +1,17 @@
 % Shared layout for cv_en.tex / cv_de.tex — one-page, two-column CV style
-% with a colored header banner and a circular photo slot.
+% with a colored header banner (no photo).
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{resume}[2026/08/27 resume style]
 
 \RequirePackage{calc}
 
 % -- package options ----------------------------------------------------
-% \usepackage[public]{resume}: force the initials placeholder instead of a
-% real photo, regardless of whether a photo file happens to exist on disk.
-% Used for the redacted/CI build so a real photo can never leak in even if
-% one is present locally during testing.
-%
 % \usepackage[size9]{resume} (size10/size9-5/size9/size8-5/size8): shrink
 % body text -- and, since almost all spacing in this file is em-based,
 % proportionally everything else too. scripts/generate.py steps through
 % these as a last-resort fallback to keep the CV on one page.
-\newif\ifcvpublic
-\cvpublicfalse
 \newlength{\cv@basept}
 \setlength{\cv@basept}{10pt}
-\DeclareOption{public}{\cvpublictrue}
 \DeclareOption{size10}{\setlength{\cv@basept}{10pt}}
 \DeclareOption{size9-5}{\setlength{\cv@basept}{9.5pt}}
 \DeclareOption{size9}{\setlength{\cv@basept}{9pt}}
@@ -38,7 +30,6 @@
 % alone (still enabled) needs no such fonts and covers most of the benefit.
 \RequirePackage[expansion=false]{microtype}
 \RequirePackage{tikz}
-\RequirePackage{graphicx}
 \RequirePackage{hyperref}
 
 % -- font-size scale ------------------------------------------------------
@@ -64,7 +55,6 @@
 
 % -- palette -----------------------------------------------------------
 \definecolor{accent}{HTML}{1F4E5F}
-\definecolor{accentlight}{HTML}{4C7A8C}
 \definecolor{muted}{HTML}{555555}
 \definecolor{rule}{HTML}{C9D3D6}
 
@@ -111,75 +101,25 @@
 }
 \newcommand{\cvcolgap}{\hspace{\cvgutter}}
 
-% -- photo ----------------------------------------------------------------
-% Drop a square-ish photo.jpg / .jpeg / .png next to content.de.json (repo
-% root) to use a real picture; otherwise a placeholder disc with initials
-% is drawn. Looked up both next to the compiled .tex and one level up, so
-% it's found whether compiling in-place or from a generated output/ folder.
-\newif\ifcvhasphoto
-\newcommand{\cvphotopath}{}
-\newcommand{\cv@checkphoto}[1]{%
-  \ifcvhasphoto\else
-    \IfFileExists{#1}{\cvhasphototrue\renewcommand{\cvphotopath}{#1}}{}%
-  \fi
-}
-\ifcvpublic
-\else
-  \cv@checkphoto{photo.jpg}
-  \cv@checkphoto{photo.jpeg}
-  \cv@checkphoto{photo.png}
-  \cv@checkphoto{../photo.jpg}
-  \cv@checkphoto{../photo.jpeg}
-  \cv@checkphoto{../photo.png}
-\fi
-
-% \cvphotobox{initials}
-\newcommand{\cvphotobox}[1]{%
-  \begin{tikzpicture}
-    \ifcvhasphoto
-      \begin{scope}
-        \clip (0,0) circle (1.5cm);
-        % "Cover" crop: scale by whichever side keeps aspect ratio while
-        % filling the 3cm square (no stretching), let the circle clip the rest.
-        \sbox0{\includegraphics{\cvphotopath}}%
-        \ifdim\wd0>\ht0
-          \node[inner sep=0] at (0,0) {\includegraphics[height=3cm]{\cvphotopath}};
-        \else
-          \node[inner sep=0] at (0,0) {\includegraphics[width=3cm]{\cvphotopath}};
-        \fi
-      \end{scope}
-      \draw[white,line width=1.2pt] (0,0) circle (1.5cm);
-    \else
-      \fill[accentlight] (0,0) circle (1.5cm);
-      \draw[white,line width=1.2pt] (0,0) circle (1.5cm);
-      \node[white,font=\bfseries\LARGE] at (0,0) {#1};
-    \fi
-  \end{tikzpicture}%
-}
-
 % -- header banner ----------------------------------------------------------
-% \cvbanner{Name}{Tagline}{Initials}{InfoBlock}
+% \cvbanner{Name}{Tagline}{InfoBlock}
 % InfoBlock is pre-formatted LaTeX (built by scripts/generate.py from
 % personal.json / personal.public.json) -- a two-column list of
 % contact/personal details, already laid out using \cvbannertextwidth.
 \newlength{\cvbannertextwidth}
-\setlength{\cvbannertextwidth}{\textwidth-3cm-0.6cm-20pt}
+\setlength{\cvbannertextwidth}{\textwidth-20pt}
 
-\newcommand{\cvbanner}[4]{%
+\newcommand{\cvbanner}[3]{%
   \noindent
   \begin{tikzpicture}
     \node[fill=accent, rounded corners=5pt, inner sep=10pt,
           text width=\dimexpr\textwidth-20pt\relax] (banner) {%
       \color{white}%
       \hypersetup{urlcolor=white, linkcolor=white}%
-      \begin{minipage}[c]{3cm}
-        \cvphotobox{#3}
-      \end{minipage}%
-      \hspace{0.6cm}%
       \begin{minipage}[c]{\cvbannertextwidth}
         {\LARGE\bfseries #1}\\[0.2em]
         {\small #2}\\[0.35em]
-        {\footnotesize #4}
+        {\footnotesize #3}
       \end{minipage}%
     };
   \end{tikzpicture}\\[0.5em]

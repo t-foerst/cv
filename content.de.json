@@ -1,6 +1,5 @@
 {
   "name": "Thorben Foerst",
-  "initials": "TF",
   "tagline": "DevOps & Cloud Enthusiast",
 
   "summary": "IT-Management-Student (B.Sc.) an der TH Köln mit Fokus auf Cloud- und DevOps-Themen. AWS Certified Solutions Architect Associate mit praktischer Erfahrung im Aufbau von Kubernetes-Clustern per Terraform sowie im Umgang mit GitOps-Workflows via ArgoCD.",
