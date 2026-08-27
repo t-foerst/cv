@@ -300,6 +300,7 @@ def main():
     if "en" in langs and translation_is_stale():
         refresh_translation()
 
+    written = []
     for lang in langs:
         path = CONTENT_PATH[lang]
         if not path.exists():
@@ -312,10 +313,15 @@ def main():
         out = OUTPUT_DIR / f"cv_{lang}.tex"
         out.write_text(tex, encoding="utf-8")
         print(f"wrote {out}")
+        written.append(lang)
 
-    ok = {lang: compile_pdf(lang) for lang in langs}
+    failed = [lang for lang in written if not compile_pdf(lang)]
+    if failed:
+        print(f"Aborting: PDF compilation failed for: {', '.join(failed)}",
+              file=sys.stderr)
+        sys.exit(1)
 
-    if "de" in langs and ok.get("de") and not os.environ.get("CI"):
+    if "de" in written and not os.environ.get("CI"):
         open_pdf("de")
 
 

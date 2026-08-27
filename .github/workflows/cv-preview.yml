@@ -21,8 +21,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            texlive-latex-base texlive-latex-extra texlive-fonts-recommended \
-            texlive-lang-german latexmk poppler-utils
+            texlive-latex-base texlive-latex-recommended texlive-latex-extra \
+            texlive-pictures texlive-fonts-recommended texlive-lang-german \
+            latexmk poppler-utils
 
       # personal.json is gitignored (it holds phone/birth date/etc.) and
       # therefore doesn't exist in this checkout. scripts/generate.py
@@ -33,17 +34,19 @@ jobs:
           CI: "true"
         run: python3 scripts/generate.py
 
-      - name: Render preview images
+      - name: Render preview images and copy PDFs
         run: |
           mkdir -p preview
           pdftoppm -png -r 150 -f 1 -l 1 output/cv_de.pdf preview/cv_de
           mv preview/cv_de-1.png preview/cv_de.png
+          cp output/cv_de.pdf preview/cv_de.pdf
           if [ -f output/cv_en.pdf ]; then
             pdftoppm -png -r 150 -f 1 -l 1 output/cv_en.pdf preview/cv_en
             mv preview/cv_en-1.png preview/cv_en.png
+            cp output/cv_en.pdf preview/cv_en.pdf
           fi
 
-      - name: Commit preview images
+      - name: Commit preview images and PDFs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
