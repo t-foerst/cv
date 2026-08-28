@@ -8,7 +8,7 @@
     "degree": "B.Sc. IT-Management",
     "org": "TH Köln -- Campus Gummersbach",
     "dates": "Okt. 2022 -- voraussichtlich Feb. 2027",
-    "thesis_title": "GitOps vs. Klassisches CI/CD im Kubernetes-Kontext: Eine vergleichende Evaluationsstudie mit ArgoCD und GitHub Actions"
+    "thesis_title": "GitOps-basierte vs. pipelinebasierte Deployments in Kubernetes"
   },
 
   "experience": [
